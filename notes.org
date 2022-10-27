@@ -1,0 +1,363 @@
+* Notes
+<2022-10-27 Thu 18:10>: Here are the commands I used to setup this lab:
+#+begin_src bash
+bundle install
+rails db:migrate db:seed
+rails s
+#+end_src
+
+I then navigated to the "localhost:3000/movies/1" URL in the Chrome browser, and received the following JSON response:
+#+begin_src json
+// 20221027181127
+// http://localhost:3000/movies/1
+
+{
+  "id": 1,
+  "title": "The Color Purple",
+  "year": 1985,
+  "length": 154,
+  "director": "Steven Spielberg",
+  "description": "Whoopi Goldberg brings Alice Walker's Pulitzer Prize-winning feminist novel to life as Celie, a Southern woman who suffered abuse over decades. A project brought to a hesitant Steven Spielberg by producer Quincy Jones, the film marks Spielberg's first female lead.",
+  "poster_url": "https://pisces.bbystatic.com/image2/BestBuy_US/images/products/3071/3071213_so.jpg",
+  "category": "Drama",
+  "discount": false,
+  "female_director": false,
+  "created_at": "2022-10-27T23:11:01.621Z",
+  "updated_at": "2022-10-27T23:11:01.621Z"
+}
+#+end_src
+
+I then added the 'active_model_serializers' gem to the existing 'Gemfile' for the project:
+#+begin_src ruby
+source 'https://rubygems.org'
+git_source(:github) { |repo| "https://github.com/#{repo}.git" }
+
+# Bundle edge Rails instead: gem 'rails', github: 'rails/rails', branch: 'main'
+gem 'rails', '~> 6.1.3', '>= 6.1.3.2'
+# Use sqlite3 as the database for Active Record
+gem 'sqlite3', '~> 1.4'
+# Use Puma as the app server
+gem 'puma', '~> 5.0'
+# Adding 'active_model_serializers'
+gem "active_model_serializers"
+# Use Active Model has_secure_password
+# gem 'bcrypt', '~> 3.1.7'
+
+# Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
+# gem 'rack-cors'
+
+group :development, :test do
+  # Call 'byebug' anywhere in the code to stop execution and get a debugger console
+  gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
+end
+
+group :development do
+  gem 'listen', '~> 3.3'
+end
+
+# Windows does not include zoneinfo files, so bundle the tzinfo-data gem
+gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
+#+end_src
+
+I then re-ran the 'bundle install' command again afterwards.
+
+I then ran the following 'rails g serializer' command:
+#+begin_src bash
+samuelbanya@Samuels-MBP ~/hub/Development/code/phase-4/phase-4-using-active-model-serializer $ rails g serializer movie
+      create  app/serializers/movie_serializer.rb
+#+end_src
+
+I then customized the 'app/serializers/movie_serializer.rb' serializer so it would display specific column fields:
+#+begin_src ruby
+class MovieSerializer < ActiveModel::Serializer
+  attributes :id, :title, :year, :length, :director, :description, :poster_url, :category, :discount, :female_director
+end
+#+end_src
+
+I then ran the 'rails s' server again, and then visited the 'http://localhost:3000/movies' URL in a Chrome browser, and received the following JSON response:
+#+begin_src json
+// 20221027182225
+// http://localhost:3000/movies
+
+[
+  {
+    "id": 1,
+    "title": "The Color Purple",
+    "year": 1985,
+    "length": 154,
+    "director": "Steven Spielberg",
+    "description": "Whoopi Goldberg brings Alice Walker's Pulitzer Prize-winning feminist novel to life as Celie, a Southern woman who suffered abuse over decades. A project brought to a hesitant Steven Spielberg by producer Quincy Jones, the film marks Spielberg's first female lead.",
+    "poster_url": "https://pisces.bbystatic.com/image2/BestBuy_US/images/products/3071/3071213_so.jpg",
+    "category": "Drama",
+    "discount": false,
+    "female_director": false
+  },
+  {
+    "id": 2,
+    "title": "Frida",
+    "year": 2002,
+    "length": 123,
+    "director": "Julie Taymor",
+    "description": "Her portrait, with that thick unibrow and un-waxed upper lip, has become an iconic symbol of feminism. Julie Taymor's biopic takes us behind the canvas to reveal the artist, the activist, the revolutionary. And knowing what we do now about lead actress Selma Hayek's off-screen experience, this film proves an even greater victory.",
+    "poster_url": "https://m.media-amazon.com/images/M/MV5BYzUxMTU0ZmEtZWE0Ni00NzJlLThhZTUtNDA1ZDZjZDUxYThiXkEyXkFqcGdeQXVyNjk1Njg5NTA@._V1_.jpg",
+    "category": "Drama",
+    "discount": false,
+    "female_director": true
+  },
+  {
+    "id": 3,
+    "title": "Queen of Katwe",
+    "year": 2016,
+    "length": 144,
+    "director": "Mira Nair",
+    "description": "Disney has a way of making us feel like pawns in a game of Let's See How Hard We Can Make Them Cry. But that's not the case with Mira Nair's feel-good drama about a Uganda girl's path to chess champ, adapted from an ESPN sports essay. Moms and dads, you want your daughters to grow up to be chess champions.",
+    "poster_url": "https://www.gstatic.com/tv/thumb/v22vodart/12806084/p12806084_v_v8_ar.jpg",
+    "category": "Drama",
+    "discount": false,
+    "female_director": true
+  },
+  {
+    "id": 4,
+    "title": "Persepolis",
+    "year": 2007,
+    "length": 96,
+    "director": "Marjane Satrapi",
+    "description": "There's a lot at play here: Persepolis is animated like a graphic novel. It's done in black and white. It's about a girl who defies Islamic fundamentalists. It's autobiographical. And it's in French. The result: a brilliant feminist feat from Marjane Satrapi.",
+    "poster_url": "https://www.gstatic.com/tv/thumb/v22vodart/173490/p173490_v_v8_an.jpg",
+    "category": "Animation",
+    "discount": false,
+    "female_director": true
+  },
+  {
+    "id": 5,
+    "title": "Little Women",
+    "year": 1994,
+    "length": 118,
+    "director": "Gillian Armstrong",
+    "description": "Feminism isn't all \"women can do anything men can do\"—it's women can do whatever the hell they want to do. And for the protagonist sisters in Gillian Anderson's adaptation of Louisa May Alcott's novel, that means a writer, a musician, a housewife and a free spirit.",
+    "poster_url": "https://www.gstatic.com/tv/thumb/v22vodart/16296/p16296_v_v8_aj.jpg",
+    "category": "Drama",
+    "discount": true,
+    "female_director": true
+  },
+  {
+    "id": 6,
+    "title": "Thelma and Louise",
+    "year": 1991,
+    "length": 130,
+    "director": "Ridley Scott",
+    "description": "Susan Sarandon and Gena Davis lock arms—and fates—in this buddy road trip drama with a feminist legacy that runs deeper than the Grand Canyon. Sure, it's directed by Ridley Scott, but the screenplay about a pair of outlaws who are anything but passive comes straight from the pen of Callie Khouri.",
+    "poster_url": "https://images-na.ssl-images-amazon.com/images/I/517NV58X7WL._SY445_.jpg",
+    "category": "Mystery",
+    "discount": false,
+    "female_director": false
+  },
+  {
+    "id": 7,
+    "title": "Alien",
+    "year": 1979,
+    "length": 117,
+    "director": "Ridley Scott",
+    "description": "Groundbreaking for 1979 science fiction, Sigourney Weaver's Ellen Ripley is one of the genre's most iconic female characters. She's not a damsel—she's a badass final girl and the only survivor to defeat the monster that mutilated and destroyed every other member of the Nostromo crew.",
+    "poster_url": "https://images-na.ssl-images-amazon.com/images/I/5119C4MWJ0L.jpg",
+    "category": "Fantasy",
+    "discount": true,
+    "female_director": false
+  },
+  {
+    "id": 8,
+    "title": "Little Women",
+    "year": 2019,
+    "length": 135,
+    "director": "Greta Gerwig",
+    "description": "In the years after the Civil War, Jo March lives in New York and makes her living as a writer, while her sister Amy studies painting in Paris. Amy has a chance encounter with Theodore, a childhood crush who proposed to Jo but was ultimately rejected. Their oldest sibling, Meg, is married to a schoolteacher, while shy sister Beth develops a devastating illness that brings the family back together.",
+    "poster_url": "https://www.gstatic.com/tv/thumb/v22vodart/17008397/p17008397_v_v8_aa.jpg",
+    "category": "Drama",
+    "discount": false,
+    "female_director": true
+  },
+  {
+    "id": 9,
+    "title": "Mad Max: Fury Road",
+    "year": 2015,
+    "length": 140,
+    "director": "George Miller",
+    "description": "Unearthing feminism in a scorched, hell-on-wheels action flick from road warrior franchise man George Miller isn't exactly obvious. But though it's titled after a male character, he is muzzled for much of the film, lending the action to a female imperator and her feminist revolt against the horrors of sexism.",
+    "poster_url": "https://cdn.shopify.com/s/files/1/1416/8662/products/mad_max_fury_road_2015_advance_original_film_artB_69310cd2-a499-45fc-a12d-df89480c4c99_5000x.jpg?v=1573593327",
+    "category": "Fantasy",
+    "discount": false,
+    "female_director": false
+  },
+  {
+    "id": 10,
+    "title": "Mustang",
+    "year": 2015,
+    "length": 100,
+    "director": "Deniz Gamze Ergüven",
+    "description": "It's easy to call Deniz Gamze Ergüven's 2015 Oscar nominee a feminist film, since it's about five orphan girls who give oppression and the Turkish patriarchy the middle finger. But it's so much more than that—it's Ergüven's personal comment on what it means to be a woman in Turkey.",
+    "poster_url": "https://www.gstatic.com/tv/thumb/v22vodart/11893143/p11893143_v_v8_ab.jpg",
+    "category": "Drama",
+    "discount": false,
+    "female_director": true
+  },
+  {
+    "id": 11,
+    "title": "Girlhood",
+    "year": 2015,
+    "length": 113,
+    "director": "Céline Sciamma",
+    "description": "Céline Sciamma's Girlhood, a contemporary narrative with a classic plot that isn't too distant from anything in the Jane Austen canon, follows a French teenager's slog through gang life on a quest to self-discovery.",
+    "poster_url": "https://www.gstatic.com/tv/thumb/v22vodart/11240526/p11240526_v_v8_aa.jpg",
+    "category": "Drama",
+    "discount": false,
+    "female_director": true
+  },
+  {
+    "id": 12,
+    "title": "Erin Brockovich",
+    "year": 2000,
+    "length": 113,
+    "director": "Steven Soderbergh",
+    "description": "Some will say Steven Soderbergh's true-life telling of that time a single mother blew the whistle on PG&E; knowingly poisoning local residents objectifies its lead with scanty costumes. We'd say that's precisely why this film makes our list: because women can wear whatever the hell they want and get sh*t done!",
+    "poster_url": "https://www.gstatic.com/tv/thumb/v22vodart/24917/p24917_v_v8_aa.jpg",
+    "category": "Drama",
+    "discount": true,
+    "female_director": false
+  },
+  {
+    "id": 13,
+    "title": "The Babadook",
+    "year": 2014,
+    "length": 95,
+    "director": "Jennifer Kent",
+    "description": "The portrayal of women in horror films has a ways to go. When it’s not a damsel in a soaked white tank top, it’s a virgin being tortured and exploited. Thankfully, that’s changing. In Jennifer Kent’s dark fairy tale, we have Amelia, a multidimensional character battling monsters and her own inner demons.",
+    "poster_url": "https://www.gstatic.com/tv/thumb/v22vodart/10644326/p10644326_v_v8_ah.jpg",
+    "category": "Horror",
+    "discount": false,
+    "female_director": true
+  }
+]
+#+end_src
+
+I then modified the 'app/serializers/movie_serializer.rb' file with the following contents to add the 'summary' method with a 'byebug' statement to include a ':summary' attribute:
+#+begin_src ruby
+class MovieSerializer < ActiveModel::Serializer
+  attributes :id, :title, :year, :length, :director, :description, :poster_url, :category, :discount, :female_director, :summary
+
+  def summary
+    byebug
+  end
+end
+#+end_src
+
+Here is the resulting 'byebug' console output:
+#+begin_src bash
+[1, 7] in /Users/samuelbanya/hub/Development/code/phase-4/phase-4-using-active-model-serializer/app/serializers/movie_serializer.rb
+   1: class MovieSerializer < ActiveModel::Serializer
+   2:   attributes :id, :title, :year, :length, :director, :description, :poster_url, :category, :discount, :female_director, :summary
+   3:
+   4:   def summary
+   5:     byebug
+=> 6:   end
+   7: end
+(byebug) self
+#<MovieSerializer:0x00007f87293c5688 @object=#<Movie id: 1, title: "The Color Purple", year: 1985, length: 154, director: "Steven Spielberg", description: "Whoopi Goldberg brings Alice Walker's Pulitzer Pri...", poster_url: "https://pisces.bbystatic.com/image2/BestBuy_US/ima...", category: "Drama", discount: false, female_director: false, created_at: "2022-10-27 23:11:01.621899000 +0000", updated_at: "2022-10-27 23:11:01.621899000 +0000">, @instance_options={:namespace=>nil, :scope=>nil, :scope_name=>:current_user}, @root=nil, @scope=nil, @instance_reflections={}, @attributes=nil>
+(byebug) self.object
+#<Movie id: 1, title: "The Color Purple", year: 1985, length: 154, director: "Steven Spielberg", description: "Whoopi Goldberg brings Alice Walker's Pulitzer Pri...", poster_url: "https://pisces.bbystatic.com/image2/BestBuy_US/ima...", category: "Drama", discount: false, female_director: false, created_at: "2022-10-27 23:11:01.621899000 +0000", updated_at: "2022-10-27 23:11:01.621899000 +0000">
+(byebug) self.object.title
+"The Color Purple"
+#+end_src
+
+I then revised the 'app/serializers/movie_serializer.rb' file with the following contents given the fact that I can index into some of the object properties with this in mind:
+#+begin_src ruby
+class MovieSerializer < ActiveModel::Serializer
+  attributes :id, :title, :year, :length, :director, :description, :poster_url, :category, :discount, :female_director, :summary
+
+  def summary
+    "#{self.object.title} - #{self.object.description[0..49]}..."
+  end
+end
+#+end_src
+
+For some goofy reason, the lab wanted to make some kind of custom serializer (which makes it difficult to follow along in the future when they should have just made a new scenario, but whatever, I went along with it).
+
+I created a file in 'app/serializers/movie_summary_serializer.rb', and filled it with the following contents:
+#+begin_src ruby
+class MovieSummarySerializer < ActiveModel::Serializer
+    attributes :summary
+
+    def summary
+        "#{self.object.title} - #{self.object.description[0..49]}..."
+    end
+end
+#+end_src
+
+I then added the following in 'config/rotues.rb':
+#+begin_src ruby
+Rails.application.routes.draw do
+  resources :movies, only: [:index, :show]
+  get "/movies/:id/summary", to: "movies#summary"
+  # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
+end
+#+end_src
+
+I then opened up 'rails s' server, and navigated to the 'localhost:3000/movies/1/summary' URL and received the following response:
+#+begin_src json
+// 20221027183825
+// http://localhost:3000/movies/1/summary
+
+{
+  "summary": "The Color Purple - Whoopi Goldberg brings Alice Walker's Pulitzer Pri..."
+}
+#+end_src
+
+As seen above, this only showed the summary for one movie, so I revised 'config/routes.rb' with the following revision:
+#+begin_src ruby
+Rails.application.routes.draw do
+  resources :movies, only: [:index, :show]
+  # For an individual movie summary:
+  get "/movies/:id/summary", to: "movies#summary"
+  # For multiple movie summaries:
+  get "/movie_summaries", to: "movies#summaries"
+  # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
+end
+#+end_src
+
+I then revised the 'app/controllers/movies_controller.rb' Controller file with the following revision:
+#+begin_src ruby
+class MoviesController < ApplicationController
+  rescue_from ActiveRecord::RecordNotFound, with: :render_not_found_response
+
+  def index
+    movies = Movie.all
+    render json: movies
+  end
+
+  def show
+    movie = Movie.find(params[:id])
+    render json: movie
+  end
+
+  def summary
+    movie = Movie.find(params[:id])
+    render json: movie, serializer: MovieSummarySerializer
+  end
+
+  def summaries
+    movies = Movie.all()
+    render json: movies, each_serializer: MovieSummarySerializer
+  end
+
+  private
+
+  def render_not_found_response
+    render json: { error: "Movie not found" }, status: :not_found
+  end
+end
+#+end_src
+
+Answers To "Check Your Understanding":
+- Q1. What do we mean when we say Active Model Serializer uses a convention-based approach?
+- Answer: This means that you have to fulfill the needs of setting up the serializer by providing the necessary 'attributes' in the serializer as well as defining its route properly in 'config/routes.rb'
+- Q2. What are some ways to break convention when using ActiveModel::Serializer?
+- Answer: You can create your own custom serializer within the 'app/serializers' section. Then you have to add a related route in the 'config/routes.rb' routes file. Then, in the related controller in 'app/controllers', you need to specify the 'serializer: ' symbol value that points to each serializer with the 'each_serializer:' symbol value
